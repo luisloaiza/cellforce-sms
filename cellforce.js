@@ -1,17 +1,15 @@
 
 const request = require('request');
 const async = require('async');
-
 const domainUrl = 'www.latammessaging.com';
-
 const loginUrl = "/exlapiservice/users/login"
 const sendSmsUrl = "/exlapi/sms/sendsms_tags"
 
 
-class CellForce {
+class Cellforce {
 
   constructor(settings) {
-    this.user =  settings.user
+    this.username =  settings.user
     this.password = settings.password
     this.apiKey = settings.apiKey
     this.userId = settings.userId
@@ -20,24 +18,18 @@ class CellForce {
 
   }
 
-  sendMessage(text,callback){
+  sendMessage(text, phone,callback){
 
       async.waterfall([
         (cb)=>{
           this.login(cb)
         },
         (dataInfo,cb)=>{
-
-          console.log("WATER 2 ", dataInfo)
-          this.sms(dataInfo.user_key,dataInfo.client_id,cb)
+          ////{"data":{"user_key":"d2bf6d00231b47a2555b4023214c758a","client_id":"6162"},"status":"success"}
+          this.sms(dataInfo.user_key,dataInfo.client_id, text, phone,cb)
 
         }
-      ],(err, result)=>{
-
-          console.log("RES ",err, result)
-
-        return callback(result)
-      })
+      ],callback)
   }
 
   sms(userKey, clientId,text, phone, callback){
@@ -48,10 +40,9 @@ class CellForce {
         url : `https://${domainUrl}${endpointUrl}`,
         json : true,
         headers : {
-          "apikey" : this.apiKey,
-          'Content-Type' : 'application/x-www-form-urlencoded'
+          "apikey" : this.apiKey
         },
-        body = {
+        body : {
           	"data": {
           		"user_key":userKey,
           		"client_id":clientId,
@@ -67,7 +58,17 @@ class CellForce {
           }
       }
 
-      //  requestObj.body= {data: JSON.stringify(dataObj)};
+      request.post(requestObj,function (error, response, body) {
+
+        let data = null
+        try{
+          data = (typeof body == "string") ? JSON.parse(body):body
+        }catch(e){
+          console.log("Parse Error in sending sms ",e)
+          callback(e)
+        }
+        callback(error, data);
+      });
 
   }
 
@@ -87,12 +88,22 @@ class CellForce {
         }
       }
 
-    console.log('Sending request ' + requestObj);
-    //{"data":{"user_key":"d2bf6d00231b47a2555b4023214c758a","client_id":"6162"},"status":"success"}
-    request(requestObj,function (error, response, body) {
-        callback(error, body);
+    request.post(requestObj,function (error, response, body) {
+
+      let data = null
+      try{
+        data = (typeof body == "string") ? JSON.parse(body).data:body.data
+      }catch(e){
+        callback(e)
+        console.log("Parse Error login in",e)
+      }
+      callback(error, data);
+
     });
 
   }
 
 }
+
+
+module.exports = Cellforce;
