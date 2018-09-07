@@ -16,6 +16,7 @@ class Cellforce {
     this.shortCode = settings.shortCode
     this.carrierId = settings.carrierId
 
+    this.debug = settings.debug ? settings.debug:false
   }
 
   sendMessage(text, phone,callback){
@@ -60,6 +61,15 @@ class Cellforce {
 
       request.post(requestObj,function (error, response, body) {
 
+        if(this.debug)
+        {
+          console.log("RESPONSE in SMS ",error,body )
+        }
+
+        if(error || !body){
+          return callback(error)
+        }
+
         let data = null
         try{
           data = (typeof body == "string") ? JSON.parse(body):body
@@ -89,6 +99,14 @@ class Cellforce {
       }
 
     request.post(requestObj,function (error, response, body) {
+
+      if(this.debug)
+      {
+        console.log("RESPONSE in LOGIN ",error,body )
+      }
+      if(error || !body){
+        return callback(error)
+      }
 
       let data = null
       try{
