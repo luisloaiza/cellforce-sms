@@ -63,7 +63,7 @@ class Cellforce {
 
         if(this.debug)
         {
-          console.log("RESPONSE in SMS ",error,body )
+          console.log("RESPONSE in SMS ",error,body, this.username, this.password )
         }
 
         if(error || !body){
