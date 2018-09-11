@@ -63,7 +63,7 @@ class Cellforce {
 
         if(this.debug)
         {
-          console.log("RESPONSE in SMS ",error,body, this.username, this.password )
+          console.log("RESPONSE in SMS ",error,body )
         }
 
         if(error || !body){
@@ -96,6 +96,11 @@ class Cellforce {
           username:this.username,
           password:this.password
         }
+      }
+
+      if(this.debug)
+      {
+        console.log("LOGIN IN ",this.username,this.password )
       }
 
     request.post(requestObj,function (error, response, body) {
