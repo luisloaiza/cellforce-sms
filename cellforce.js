@@ -3,7 +3,7 @@ const request = require('request');
 const async = require('async');
 const domainUrl = 'www.latammessaging.com';
 const loginUrl = "/exlapiservice/users/login"
-const sendSmsUrl = "/exlapi/sms/sendsms_tags"
+const sendSmsUrl = "/exlapi/sms/sendsms"
 
 
 class Cellforce {
@@ -27,6 +27,11 @@ class Cellforce {
         },
         (dataInfo,cb)=>{
           ////{"data":{"user_key":"d2bf6d00231b47a2555b4023214c758a","client_id":"6162"},"status":"success"}
+          if(!dataInfo)
+          {
+            return cb()
+          }
+
           this.sms(dataInfo.user_key,dataInfo.client_id, text, phone,cb)
 
         }
@@ -47,13 +52,11 @@ class Cellforce {
           	"data": {
           		"user_key":userKey,
           		"client_id":clientId,
-          		"message":"##texto##",
-          		"taglist": ["texto"],
+          		"message":text,
           		"shortcode_id": this.shortCode,
           		"cellphones": [{
           			"number": phone,
-          			"carrier_id": this.carrierId,
-          			"texto":text
+          			"carrier_id": this.carrierId
           		}]
           	}
           }
